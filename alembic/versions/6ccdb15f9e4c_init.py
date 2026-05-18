@@ -19,8 +19,38 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    pass
-
+    op.create_table(
+        'users',
+        sa.Column('id', sa.Integer(), primary_key=True),
+        sa.Column('name', sa.String(), nullable=False),
+        sa.Column('api_key', sa.String(), nullable=False, unique=True),
+    )
+    op.create_table(
+        'tweets',
+        sa.Column('id', sa.Integer(), primary_key=True),
+        sa.Column('content', sa.String(), nullable=False),
+        sa.Column('author_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=False),
+    )
+    op.create_table(
+        'media',
+        sa.Column('id', sa.Integer(), primary_key=True),
+        sa.Column('file_path', sa.String(), nullable=False),
+        sa.Column('tweet_id', sa.Integer(), sa.ForeignKey('tweets.id'), nullable=True),
+    )
+    op.create_table(
+        'follows',
+        sa.Column('follower_id', sa.Integer(), sa.ForeignKey('users.id'), primary_key=True),
+        sa.Column('following_id', sa.Integer(), sa.ForeignKey('users.id'), primary_key=True),
+    )
+    op.create_table(
+        'likes',
+        sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id'), primary_key=True),
+        sa.Column('tweet_id', sa.Integer(), sa.ForeignKey('tweets.id'), primary_key=True),
+    )
 
 def downgrade() -> None:
-    pass
+    op.drop_table('likes')
+    op.drop_table('follows')
+    op.drop_table('media')
+    op.drop_table('tweets')
+    op.drop_table('users')

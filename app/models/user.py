@@ -14,5 +14,12 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     api_key = Column(String, unique=True, nullable=False)
-    followers = relationship('User', secondary=follows, primaryjoin=(follows.c.follower_id == id), secondaryjoin=(follows.c.following_id == id))
-    following = relationship('User', secondary=follows, primaryjoin=(follows.c.following_id == id), secondaryjoin=(follows.c.follower_id == id))
+    followers = relationship('User', secondary=follows,
+        primaryjoin=(follows.c.follower_id == id),
+        secondaryjoin=(follows.c.following_id == id),
+        overlaps="following")
+    following = relationship('User', secondary=follows,
+        primaryjoin=(follows.c.following_id == id),
+        secondaryjoin=(follows.c.follower_id == id),
+        overlaps="followers")
+    tweets = relationship('Tweet', back_populates='author')
