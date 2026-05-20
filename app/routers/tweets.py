@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from app.dependencies import get_current_user
 from app.database import get_db
 from app.crud.tweet import create_tweet, delete_tweet, like_tweet, unlike_tweet, get_tweets
-from app.schemas.tweet import TweetIn
+from app.schemas.tweet import TweetIn, TweetOut
 
 
 router = APIRouter(prefix='/api', tags=['tweets'])
@@ -49,5 +49,14 @@ async def GET_tweet(
     current_user = Depends(get_current_user)
 ):
     tweets_get = await get_tweets(db, current_user)
-    return {'result': True, 'tweets': tweets_get}
+    tweets = []
+    for tweet in tweets_get:
+        tweets.append({
+            "id": tweet.id,
+            "content": tweet.content,
+            "attachments": [a.file_path for a in tweet.attachments],
+            "author": {"id": tweet.author.id, "name": tweet.author.name},
+            "likes": [{"user_id": u.id, "name": u.name} for u in tweet.likes]
+        })
+    return {'result': True, 'tweets': tweets}
     
