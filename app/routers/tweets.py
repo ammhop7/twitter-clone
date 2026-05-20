@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from app.dependencies import get_current_user
 from app.database import get_db
 from app.crud.tweet import create_tweet, delete_tweet, like_tweet, unlike_tweet, get_tweets
-from app.schemas.tweet import TweetIn, TweetOut
+from app.schemas.tweet import TweetIn
 
 
 router = APIRouter(prefix='/api', tags=['tweets'])
@@ -22,7 +22,7 @@ async def DELETE_tweet(
     db = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    DELETE_tweet = await delete_tweet(db, current_user, tweet_id)
+    await delete_tweet(db, current_user, tweet_id)
     return {'result': True}
 
 @router.post('/tweets/{tweet_id}/likes')
@@ -31,7 +31,7 @@ async def POST_like(
     db = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    tweet_like = await like_tweet(db, current_user, tweet_id)
+    await like_tweet(db, current_user, tweet_id)
     return {'result': True}
 
 @router.delete('/tweets/{tweet_id}/likes')
@@ -40,7 +40,7 @@ async def DELETE_like(
     db = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    delete_like = await unlike_tweet(db, current_user, tweet_id)
+    await unlike_tweet(db, current_user, tweet_id)
     return {'result': True}
 
 @router.get('/tweets')

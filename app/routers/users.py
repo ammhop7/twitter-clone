@@ -47,7 +47,7 @@ async def POST_follow(
     db = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    post_follow = await follow_user(db, current_user, user_id)
+    await follow_user(db, current_user, user_id)
     return {'result': True}
 
 @router.delete('/users/{user_id}/follow')
@@ -56,5 +56,5 @@ async def DELETE_follow(
     db = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    delete_follow = await unfollow_user(db, current_user, user_id)
+    await unfollow_user(db, current_user, user_id)
     return {'result': True}

@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, desc
+from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Tweet
 from  app.schemas.tweet import TweetIn
@@ -62,10 +62,19 @@ async def get_tweets(
     db: AsyncSession,
     current_user: User
 ):
-    following_ids = [user.id for user in current_user.following]
+    from sqlalchemy import text
+    follows_result = await db.execute(
+        text("SELECT following_id FROM follows WHERE follower_id = :uid"),
+        {"uid": current_user.id}
+    )
+    following_ids = [row[0] for row in follows_result.fetchall()]
+    
+    if not following_ids:
+        return []
+    
     result = await db.execute(
         select(Tweet)
         .where(Tweet.author_id.in_(following_ids))
-        .order_by(desc(Tweet.id))  
-)
+        .order_by(desc(Tweet.id))
+    )
     return result.scalars().all()
