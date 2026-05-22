@@ -5,6 +5,9 @@ venv/
 *.egg-info/
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 uploads/
 test.db
 .idea/
+.coverage
+htmlcov/

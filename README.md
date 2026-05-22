@@ -14,10 +14,35 @@
 ## Запуск
 
 ### Требования
+
 - Docker
 - Docker Compose
 
 ### Команды
+
+1. Склонируй репозиторий:
+
+```bash
+git clone <url>
+cd twitter-clone
+```
+
+2. Создай `.env` файл на основе примера:
+
+```bash
+cp .env.example .env
+```
+
+3. Открой `.env` и заполни своими значениями:
+
+```env
+DATABASE_URL=postgresql+asyncpg://myuser:mypassword@db:5432/mydb
+POSTGRES_USER=myuser
+POSTGRES_PASSWORD=mypassword
+POSTGRES_DB=mydb
+```
+
+4. Запусти проект:
 
 ```bash
 docker compose up -d
@@ -29,18 +54,18 @@ Swagger документация: `http://localhost/docs`
 
 ## API
 
-| Метод | Endpoint | Описание |
-|-------|----------|----------|
-| POST | /api/tweets | Создать твит |
-| DELETE | /api/tweets/{id} | Удалить твит |
-| POST | /api/tweets/{id}/likes | Лайкнуть твит |
-| DELETE | /api/tweets/{id}/likes | Убрать лайк |
-| GET | /api/tweets | Получить ленту |
-| POST | /api/medias | Загрузить медиа |
-| GET | /api/users/me | Мой профиль |
-| GET | /api/users/{id} | Профиль пользователя |
-| POST | /api/users/{id}/follow | Подписаться |
-| DELETE | /api/users/{id}/follow | Отписаться |
+| Метод  | Endpoint               | Описание             |
+|--------|------------------------|----------------------|
+| POST   | /api/tweets            | Создать твит         |
+| DELETE | /api/tweets/{id}       | Удалить твит         |
+| POST   | /api/tweets/{id}/likes | Лайкнуть твит        |
+| DELETE | /api/tweets/{id}/likes | Убрать лайк          |
+| GET    | /api/tweets            | Получить ленту       |
+| POST   | /api/medias            | Загрузить медиа      |
+| GET    | /api/users/me          | Мой профиль          |
+| GET    | /api/users/{id}        | Профиль пользователя |
+| POST   | /api/users/{id}/follow | Подписаться          |
+| DELETE | /api/users/{id}/follow | Отписаться           |
 
 ## Тестирование
 
@@ -52,3 +77,16 @@ pytest tests/ -v
 ## Авторизация
 
 Все запросы требуют заголовок `api-key` с ключом пользователя.
+
+После запуска автоматически создаются два тестовых пользователя:
+
+| Пользователь | api-key |
+|--------------|---------|
+| Test User 1  | test    |
+| Test User 2  | test2   |
+
+Пример запроса:
+
+```bash
+curl -H "api-key: test" http://localhost/api/users/me
+```
