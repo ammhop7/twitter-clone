@@ -1,62 +1,62 @@
 from fastapi import APIRouter, Depends
 from app.dependencies import get_current_user
 from app.database import get_db
-from app.crud.tweet import create_tweet, delete_tweet, like_tweet, unlike_tweet, get_tweets
+from app.crud.tweet import (
+    create_tweet,
+    delete_tweet,
+    like_tweet,
+    unlike_tweet,
+    get_tweets,
+)
 from app.schemas.tweet import TweetIn
 
+router = APIRouter(prefix="/api", tags=["tweets"])
 
-router = APIRouter(prefix='/api', tags=['tweets'])
 
-@router.post('/tweets')
+@router.post("/tweets")
 async def POST_tweet(
-    data: TweetIn,
-    current_user = Depends(get_current_user),
-    db = Depends(get_db)
+    data: TweetIn, current_user=Depends(get_current_user), db=Depends(get_db)
 ):
     tweet = await create_tweet(db, current_user, data)
-    return {'result': True, 'tweet_id': tweet.id}
+    return {"result": True, "tweet_id": tweet.id}
 
-@router.delete('/tweets/{tweet_id}')
+
+@router.delete("/tweets/{tweet_id}")
 async def DELETE_tweet(
-    tweet_id: int,
-    db = Depends(get_db),
-    current_user = Depends(get_current_user)
+    tweet_id: int, db=Depends(get_db), current_user=Depends(get_current_user)
 ):
     await delete_tweet(db, current_user, tweet_id)
-    return {'result': True}
+    return {"result": True}
 
-@router.post('/tweets/{tweet_id}/likes')
+
+@router.post("/tweets/{tweet_id}/likes")
 async def POST_like(
-    tweet_id: int,
-    db = Depends(get_db),
-    current_user = Depends(get_current_user)
+    tweet_id: int, db=Depends(get_db), current_user=Depends(get_current_user)
 ):
     await like_tweet(db, current_user, tweet_id)
-    return {'result': True}
+    return {"result": True}
 
-@router.delete('/tweets/{tweet_id}/likes')
+
+@router.delete("/tweets/{tweet_id}/likes")
 async def DELETE_like(
-    tweet_id: int,
-    db = Depends(get_db),
-    current_user = Depends(get_current_user)
+    tweet_id: int, db=Depends(get_db), current_user=Depends(get_current_user)
 ):
     await unlike_tweet(db, current_user, tweet_id)
-    return {'result': True}
+    return {"result": True}
 
-@router.get('/tweets')
-async def GET_tweet(
-    db = Depends(get_db),
-    current_user = Depends(get_current_user)
-):
+
+@router.get("/tweets")
+async def GET_tweet(db=Depends(get_db), current_user=Depends(get_current_user)):
     tweets_get = await get_tweets(db, current_user)
     tweets = []
     for tweet in tweets_get:
-        tweets.append({
-            "id": tweet.id,
-            "content": tweet.content,
-            "attachments": [a.file_path for a in tweet.attachments],
-            "author": {"id": tweet.author.id, "name": tweet.author.name},
-            "likes": [{"user_id": u.id, "name": u.name} for u in tweet.likes]
-        })
-    return {'result': True, 'tweets': tweets}
-    
+        tweets.append(
+            {
+                "id": tweet.id,
+                "content": tweet.content,
+                "attachments": [a.file_path for a in tweet.attachments],
+                "author": {"id": tweet.author.id, "name": tweet.author.name},
+                "likes": [{"user_id": u.id, "name": u.name} for u in tweet.likes],
+            }
+        )
+    return {"result": True, "tweets": tweets}

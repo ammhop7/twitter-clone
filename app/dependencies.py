@@ -5,13 +5,13 @@ from app.database import get_db
 from app.models import User
 from sqlalchemy import select
 
+
 async def get_current_user(
-    api_key: str = Header(...),
-    db: AsyncSession = Depends(get_db)
+    api_key: str = Header(..., alias="api-key"), db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(select(User).where(User.api_key == api_key))
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=403, detail="Invalid API key")
-    
+
     return user
