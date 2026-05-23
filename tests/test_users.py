@@ -23,7 +23,7 @@ async def test_get_user_by_id(client: AsyncClient, test_user):
 
 
 async def test_follow_unfollow(client: AsyncClient, test_user):
-    
+
     async with async_session_maker() as session:
         user2 = User(name="User2", api_key="key2")
         session.add(user2)

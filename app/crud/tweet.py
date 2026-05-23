@@ -4,11 +4,22 @@ from app.models import Tweet
 from app.schemas.tweet import TweetIn
 from app.models import User
 from fastapi import HTTPException
+from app.models import Tweet, Media
 
 
 async def create_tweet(db: AsyncSession, current_user: User, data: TweetIn):
     tweet = Tweet(content=data.tweet_data, author_id=current_user.id)
     db.add(tweet)
+    await db.flush()  # получаем tweet.id до commit
+
+    if data.tweet_media_ids:
+        result = await db.execute(
+            select(Media).where(Media.id.in_(data.tweet_media_ids))
+        )
+        medias = result.scalars().all()
+        for media in medias:
+            media.tweet_id = tweet.id
+
     await db.commit()
     return tweet
 
